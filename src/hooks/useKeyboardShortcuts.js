@@ -6,7 +6,10 @@ const useKeyboardShortcuts = ({
   onToggleMenu,
   onSearch,
   onSelectAll,
-  onEscape
+  onEscape,
+  onOpenAISettings,
+  onToggleAIInsights,
+  onToggleHelp
 }) => {
   useEffect(() => {
     const handleKeyDown = (event) => {
@@ -21,8 +24,8 @@ const useKeyboardShortcuts = ({
       }
 
       // Prevent default for our custom shortcuts
-      const shortcutKeys = ['n', 'p', 'm', '/', 'a', 'Escape'];
-      if (shortcutKeys.includes(event.key) && (event.ctrlKey || event.metaKey || event.key === 'Escape' || event.key === '/')) {
+      const shortcutKeys = ['n', 'p', 'm', '/', 'a', 'i', 'b', '?', 'Escape'];
+      if (shortcutKeys.includes(event.key) && (event.ctrlKey || event.metaKey || event.key === 'Escape' || event.key === '/' || event.key === '?')) {
         event.preventDefault();
       }
 
@@ -48,9 +51,24 @@ const useKeyboardShortcuts = ({
           onSearch?.();
           break;
         
+        case event.key === '?' && !event.ctrlKey && !event.metaKey:
+          // ? : Toggle Help
+          onToggleHelp?.();
+          break;
+        
         case (event.ctrlKey || event.metaKey) && event.key === 'a':
           // Ctrl/Cmd + A: Select All
           onSelectAll?.();
+          break;
+        
+        case (event.ctrlKey || event.metaKey) && event.key === 'i':
+          // Ctrl/Cmd + I: AI Insights
+          onToggleAIInsights?.();
+          break;
+        
+        case (event.ctrlKey || event.metaKey) && event.key === 'b':
+          // Ctrl/Cmd + B: AI Settings
+          onOpenAISettings?.();
           break;
         
         case event.key === 'Escape':
@@ -65,7 +83,7 @@ const useKeyboardShortcuts = ({
 
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [onCreateTodo, onOpenProfile, onToggleMenu, onSearch, onSelectAll, onEscape]);
+  }, [onCreateTodo, onOpenProfile, onToggleMenu, onSearch, onSelectAll, onEscape, onOpenAISettings, onToggleAIInsights, onToggleHelp]);
 };
 
 export default useKeyboardShortcuts;

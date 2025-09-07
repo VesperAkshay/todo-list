@@ -7,9 +7,13 @@ import {
   Tag as TagIcon, 
   AlignLeft,
   Plus,
-  Trash2
+  Trash2,
+  Brain,
+  Sparkles,
+  Zap
 } from 'lucide-react';
 import './TodoForm.css';
+import { aiService } from '../services/aiService';
 
 const TodoForm = ({ todo, categories, tags, onSubmit, onClose }) => {
   const [formData, setFormData] = useState({
@@ -24,6 +28,15 @@ const TodoForm = ({ todo, categories, tags, onSubmit, onClose }) => {
   const [errors, setErrors] = useState({});
   const [newTag, setNewTag] = useState('');
   const [newSubtask, setNewSubtask] = useState('');
+  const [aiSuggestions, setAiSuggestions] = useState(null);
+  const [isProcessingAI, setIsProcessingAI] = useState(false);
+  const [showAISuggestions, setShowAISuggestions] = useState(false);
+  const [aiFeatures, setAiFeatures] = useState({
+    smartParsing: true,
+    autoCategories: true,
+    dateParsing: true,
+    priorityDetection: true
+  });
 
   useEffect(() => {
     if (todo) {
@@ -37,7 +50,61 @@ const TodoForm = ({ todo, categories, tags, onSubmit, onClose }) => {
         subtasks: todo.subtasks || []
       });
     }
+
+    // Load AI features settings
+    const savedFeatures = localStorage.getItem('ai_features');
+    if (savedFeatures) {
+      setAiFeatures(JSON.parse(savedFeatures));
+    }
   }, [todo]);
+
+  // AI processing functions
+  const processWithAI = async (text) => {
+    if (!text.trim() || !aiFeatures.smartParsing) return;
+
+    setIsProcessingAI(true);
+    try {
+      const smartParsed = aiService.parseSmartTodo(text);
+      
+      if (smartParsed) {
+        setAiSuggestions(smartParsed);
+        setShowAISuggestions(true);
+      }
+    } catch (error) {
+      console.error('AI processing error:', error);
+    }
+    setIsProcessingAI(false);
+  };
+
+  const applyAISuggestions = () => {
+    if (!aiSuggestions) return;
+
+    const updates = {};
+    
+    if (aiFeatures.dateParsing && aiSuggestions.dueDate) {
+      updates.dueDate = aiSuggestions.dueDate.split('T')[0];
+    }
+    
+    if (aiFeatures.priorityDetection && aiSuggestions.priority) {
+      updates.priority = aiSuggestions.priority;
+    }
+    
+    if (aiFeatures.autoCategories && aiSuggestions.category) {
+      updates.category = aiSuggestions.category.toLowerCase();
+    }
+
+    if (aiSuggestions.title && aiSuggestions.title !== formData.title) {
+      updates.title = aiSuggestions.title;
+    }
+
+    setFormData(prev => ({ ...prev, ...updates }));
+    setShowAISuggestions(false);
+  };
+
+  const dismissAISuggestions = () => {
+    setShowAISuggestions(false);
+    setAiSuggestions(null);
+  };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -52,6 +119,11 @@ const TodoForm = ({ todo, categories, tags, onSubmit, onClose }) => {
         ...prev,
         [name]: ''
       }));
+    }
+
+    // Trigger AI processing for title changes
+    if (name === 'title' && value.trim().length > 5) {
+      processWithAI(value);
     }
   };
 
@@ -176,6 +248,70 @@ const TodoForm = ({ todo, categories, tags, onSubmit, onClose }) => {
               autoFocus
             />
             {errors.title && <span className="error-message">{errors.title}</span>}
+            
+            {/* AI Processing Indicator */}
+            {isProcessingAI && (
+              <div className="ai-processing">
+                <Brain className="spinning" size={16} />
+                <span>AI is analyzing your todo...</span>
+              </div>
+            )}
+
+            {/* AI Suggestions */}
+            {showAISuggestions && aiSuggestions && (
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="ai-suggestions"
+              >
+                <div className="ai-suggestions-header">
+                  <Sparkles size={16} />
+                  <span>AI Suggestions</span>
+                </div>
+                <div className="ai-suggestions-content">
+                  {aiSuggestions.extractedInfo.dueDate && (
+                    <div className="ai-suggestion-item">
+                      <Calendar size={14} />
+                      <span>Due: {new Date(aiSuggestions.dueDate).toLocaleDateString()}</span>
+                    </div>
+                  )}
+                  {aiSuggestions.extractedInfo.priority && (
+                    <div className="ai-suggestion-item">
+                      <Flag size={14} />
+                      <span>Priority: {aiSuggestions.priority}</span>
+                    </div>
+                  )}
+                  {aiSuggestions.extractedInfo.category && (
+                    <div className="ai-suggestion-item">
+                      <TagIcon size={14} />
+                      <span>Category: {aiSuggestions.category}</span>
+                    </div>
+                  )}
+                  {aiSuggestions.title !== formData.title && (
+                    <div className="ai-suggestion-item">
+                      <Zap size={14} />
+                      <span>Cleaned title: "{aiSuggestions.title}"</span>
+                    </div>
+                  )}
+                </div>
+                <div className="ai-suggestions-actions">
+                  <button
+                    type="button"
+                    className="ai-apply-button"
+                    onClick={applyAISuggestions}
+                  >
+                    Apply Suggestions
+                  </button>
+                  <button
+                    type="button"
+                    className="ai-dismiss-button"
+                    onClick={dismissAISuggestions}
+                  >
+                    Dismiss
+                  </button>
+                </div>
+              </motion.div>
+            )}
           </div>
 
           <div className="form-group">

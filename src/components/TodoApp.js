@@ -8,8 +8,12 @@ import StatsPanel from './StatsPanel';
 import ProfileSection from './ProfileSection';
 import ConfirmDialog from './ConfirmDialog';
 import KeyboardShortcuts from './KeyboardShortcuts';
+import ShortcutTip from './ShortcutTip';
+import AISettings from './AISettings';
+import AIInsights from './AIInsights';
 import useKeyboardShortcuts from '../hooks/useKeyboardShortcuts';
 import { todoService } from '../services/todoService';
+import { aiService } from '../services/aiService';
 import './TodoApp.css';
 
 const TodoApp = ({ user, onLogout, onUserUpdate, theme, onThemeChange }) => {
@@ -32,11 +36,15 @@ const TodoApp = ({ user, onLogout, onUserUpdate, theme, onThemeChange }) => {
   const [stats, setStats] = useState({});
   const [confirmDialog, setConfirmDialog] = useState(null);
   const [showKeyboardShortcuts, setShowKeyboardShortcuts] = useState(false);
+  const [isAISettingsOpen, setIsAISettingsOpen] = useState(false);
+  const [showAIInsights, setShowAIInsights] = useState(false);
+  const [completedTodos, setCompletedTodos] = useState([]);
   const searchInputRef = useRef(null);
 
   useEffect(() => {
     loadTodos();
     loadStats();
+    loadCompletedTodos();
   }, [user]);
 
   useEffect(() => {
@@ -65,10 +73,16 @@ const TodoApp = ({ user, onLogout, onUserUpdate, theme, onThemeChange }) => {
       setEditingTodo(null);
       setIsProfileOpen(false);
       setShowKeyboardShortcuts(false);
+      setIsAISettingsOpen(false);
+      setShowAIInsights(false);
       if (confirmDialog) {
         setConfirmDialog(null);
       }
-    }
+    },
+    // AI shortcuts
+    onOpenAISettings: () => setIsAISettingsOpen(true),
+    onToggleAIInsights: () => setShowAIInsights(prev => !prev),
+    onToggleHelp: () => setShowKeyboardShortcuts(prev => !prev)
   });
 
   // Handle ? key for keyboard shortcuts help
@@ -95,6 +109,15 @@ const TodoApp = ({ user, onLogout, onUserUpdate, theme, onThemeChange }) => {
   const loadStats = () => {
     const userStats = todoService.getStats(user.id);
     setStats(userStats);
+  };
+
+  const loadCompletedTodos = () => {
+    // Get completed todos from localStorage or service
+    const allTodos = JSON.parse(localStorage.getItem('todos') || '[]');
+    const userCompletedTodos = allTodos.filter(todo => 
+      todo.userId === user.id && todo.completed
+    );
+    setCompletedTodos(userCompletedTodos);
   };
 
   const applyFiltersAndSort = () => {
@@ -305,6 +328,7 @@ const TodoApp = ({ user, onLogout, onUserUpdate, theme, onThemeChange }) => {
         onSelectAll={handleSelectAll}
         onBulkAction={handleBulkAction}
         searchInputRef={searchInputRef}
+        onShowKeyboardShortcuts={() => setShowKeyboardShortcuts(true)}
       />
 
       <div className="todo-app-content">
@@ -318,6 +342,8 @@ const TodoApp = ({ user, onLogout, onUserUpdate, theme, onThemeChange }) => {
               onClose={() => setSidebarOpen(false)}
               filters={filters}
               onFiltersChange={setFilters}
+              onOpenAISettings={() => setIsAISettingsOpen(true)}
+              onToggleAIInsights={() => setShowAIInsights(prev => !prev)}
             />
           )}
         </AnimatePresence>
@@ -411,6 +437,26 @@ const TodoApp = ({ user, onLogout, onUserUpdate, theme, onThemeChange }) => {
         isOpen={showKeyboardShortcuts}
         onClose={() => setShowKeyboardShortcuts(false)}
       />
+
+      {/* AI Settings */}
+      <AnimatePresence>
+        {isAISettingsOpen && (
+          <AISettings
+            isOpen={isAISettingsOpen}
+            onClose={() => setIsAISettingsOpen(false)}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* AI Insights Panel */}
+      <AIInsights
+        todos={todos}
+        completedTodos={completedTodos}
+        isVisible={showAIInsights}
+      />
+
+      {/* Shortcut Tips */}
+      <ShortcutTip />
     </div>
   );
 };

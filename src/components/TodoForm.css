@@ -362,3 +362,113 @@
     padding: 3px 6px;
   }
 }
+
+/* AI Features Styles */
+.ai-processing {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+  padding: 8px 12px;
+  background: var(--bg-secondary);
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
+.ai-processing .spinning {
+  animation: spin 1s linear infinite;
+  color: var(--primary);
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.ai-suggestions {
+  margin-top: 12px;
+  padding: 16px;
+  background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-primary) 100%);
+  border: 2px solid var(--primary);
+  border-radius: 8px;
+  box-shadow: 0 4px 12px var(--shadow-md);
+}
+
+.ai-suggestions-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+  color: var(--primary);
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.ai-suggestions-header svg {
+  color: var(--primary);
+}
+
+.ai-suggestions-content {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.ai-suggestion-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px;
+  background: var(--bg-primary);
+  border-radius: 4px;
+  font-size: 13px;
+  color: var(--text-secondary);
+  border: 1px solid var(--border);
+}
+
+.ai-suggestion-item svg {
+  color: var(--primary);
+  flex-shrink: 0;
+}
+
+.ai-suggestions-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.ai-apply-button,
+.ai-dismiss-button {
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 1px solid;
+}
+
+.ai-apply-button {
+  background: var(--primary);
+  color: white;
+  border-color: var(--primary);
+}
+
+.ai-apply-button:hover {
+  background: var(--primary-dark);
+  border-color: var(--primary-dark);
+}
+
+.ai-dismiss-button {
+  background: transparent;
+  color: var(--text-secondary);
+  border-color: var(--border);
+}
+
+.ai-dismiss-button:hover {
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+}

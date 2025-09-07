@@ -12,22 +12,33 @@ const KeyboardShortcuts = ({ isOpen, onClose }) => {
         { keys: ["Ctrl", "P"], description: "Open profile", mac: ["⌘", "P"] },
         { keys: ["Ctrl", "M"], description: "Toggle sidebar", mac: ["⌘", "M"] },
         { keys: ["/"], description: "Focus search", mac: ["/"] },
-        { keys: ["Escape"], description: "Cancel/Close", mac: ["Escape"] }
+        { keys: ["Escape"], description: "Cancel/Close", mac: ["Escape"] },
+        { keys: ["?"], description: "Show keyboard shortcuts", mac: ["?"] }
       ]
     },
     {
       category: "Todo Management",
       items: [
         { keys: ["Ctrl", "A"], description: "Select all todos", mac: ["⌘", "A"] },
+        { keys: ["Ctrl", "D"], description: "Duplicate selected todo", mac: ["⌘", "D"] },
+        { keys: ["Delete"], description: "Delete selected todos", mac: ["Delete"] },
         { keys: ["Enter"], description: "Save todo (when editing)", mac: ["Enter"] },
         { keys: ["Escape"], description: "Cancel editing", mac: ["Escape"] }
+      ]
+    },
+    {
+      category: "AI Features",
+      items: [
+        { keys: ["Ctrl", "I"], description: "Toggle AI insights", mac: ["⌘", "I"] },
+        { keys: ["Ctrl", "B"], description: "Open AI settings", mac: ["⌘", "B"] }
       ]
     },
     {
       category: "Navigation",
       items: [
         { keys: ["Tab"], description: "Navigate between elements", mac: ["Tab"] },
-        { keys: ["Shift", "Tab"], description: "Navigate backwards", mac: ["Shift", "Tab"] }
+        { keys: ["Shift", "Tab"], description: "Navigate backwards", mac: ["Shift", "Tab"] },
+        { keys: ["↑", "↓"], description: "Navigate todo list", mac: ["↑", "↓"] }
       ]
     }
   ];
@@ -95,7 +106,15 @@ const KeyboardShortcuts = ({ isOpen, onClose }) => {
             </div>
 
             <div className="shortcuts-footer">
-              <p>Press <kbd className="key">?</kbd> to toggle this help</p>
+              <div className="shortcuts-tip">
+                <p>💡 <strong>Pro tip:</strong> Most shortcuts work globally throughout the app</p>
+                <p>Press <kbd className="key">?</kbd> anywhere to toggle this help</p>
+              </div>
+              <div className="shortcuts-note">
+                <p className="platform-note">
+                  {isMac ? 'macOS shortcuts shown' : 'Windows/Linux shortcuts shown'}
+                </p>
+              </div>
             </div>
           </motion.div>
         </motion.div>

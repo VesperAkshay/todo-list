@@ -12,7 +12,8 @@ import {
   Trash,
   LogOut,
   User,
-  Settings
+  Settings,
+  HelpCircle
 } from 'lucide-react';
 import './Header.css';
 
@@ -33,7 +34,8 @@ const Header = ({
   totalCount,
   onSelectAll,
   onBulkAction,
-  searchInputRef
+  searchInputRef,
+  onShowKeyboardShortcuts
 }) => {
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [showSortMenu, setShowSortMenu] = useState(false);
@@ -74,7 +76,7 @@ const Header = ({
           <Search size={18} className="search-icon" />
           <input
             type="text"
-            placeholder="Search todos..."
+            placeholder="Search todos... (Press / to focus)"
             value={filters.search}
             onChange={handleSearchChange}
             className="search-input"
@@ -166,6 +168,14 @@ const Header = ({
               </motion.div>
             )}
           </div>
+
+          <button
+            className="help-button-header"
+            onClick={onShowKeyboardShortcuts}
+            title="Keyboard shortcuts"
+          >
+            <HelpCircle size={18} />
+          </button>
 
           <button
             className="create-button"

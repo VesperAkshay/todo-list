@@ -9,7 +9,10 @@ import {
   Tag as TagIcon,
   CheckCircle,
   Circle,
-  Clock
+  Clock,
+  Brain,
+  Settings,
+  Zap
 } from 'lucide-react';
 import './Sidebar.css';
 
@@ -20,7 +23,9 @@ const Sidebar = ({
   stats, 
   onClose, 
   filters, 
-  onFiltersChange 
+  onFiltersChange,
+  onOpenAISettings,
+  onToggleAIInsights
 }) => {
   const handleFilterChange = (key, value) => {
     onFiltersChange({
@@ -271,6 +276,32 @@ const Sidebar = ({
                 Clear All Filters
               </button>
             )}
+          </section>
+
+          {/* AI Features Section */}
+          <section className="ai-section">
+            <h3>
+              <Brain size={16} />
+              AI Features
+            </h3>
+            <div className="ai-menu">
+              <button 
+                className="ai-menu-item"
+                onClick={onToggleAIInsights}
+                title="Toggle AI Insights (Ctrl+I)"
+              >
+                <Zap size={16} />
+                <span>AI Insights</span>
+              </button>
+              <button 
+                className="ai-menu-item"
+                onClick={onOpenAISettings}
+                title="Open AI Settings (Ctrl+B)"
+              >
+                <Settings size={16} />
+                <span>AI Settings</span>
+              </button>
+            </div>
           </section>
 
           {/* User Info */}
