@@ -1,0 +1,36 @@
+.todo-list {
+  display: grid;
+  gap: 16px;
+  padding: 20px 0;
+}
+
+.todo-list.grid {
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+}
+
+.todo-list.list {
+  grid-template-columns: 1fr;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .todo-list {
+    gap: 12px;
+    padding: 16px 0;
+  }
+
+  .todo-list.grid {
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  }
+}
+
+@media (max-width: 480px) {
+  .todo-list {
+    gap: 8px;
+    padding: 12px 0;
+  }
+
+  .todo-list.grid {
+    grid-template-columns: 1fr;
+  }
+}

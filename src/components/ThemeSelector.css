@@ -1,0 +1,263 @@
+.theme-selector {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 1000;
+}
+
+.theme-toggle {
+  background: var(--accent);
+  color: white;
+  border: none;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 12px var(--shadow-lg);
+  transition: all 0.2s ease;
+}
+
+.theme-toggle:hover {
+  background: var(--accent-hover);
+  box-shadow: 0 6px 16px var(--shadow-lg);
+}
+
+.theme-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.3);
+  z-index: 999;
+}
+
+.theme-menu {
+  position: absolute;
+  bottom: 70px;
+  right: 0;
+  background: var(--bg-primary);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  box-shadow: 0 12px 32px var(--shadow-lg);
+  padding: 20px;
+  min-width: 280px;
+  max-width: 320px;
+  z-index: 1001;
+  pointer-events: auto;
+}
+
+.theme-menu-header {
+  margin-bottom: 16px;
+  text-align: center;
+}
+
+.theme-menu-header h3 {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 4px 0;
+}
+
+.theme-menu-header p {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.theme-options {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.theme-option {
+  background: none;
+  border: 2px solid var(--border);
+  border-radius: 12px;
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: left;
+  position: relative;
+  overflow: hidden;
+  pointer-events: auto;
+}
+
+.theme-option:hover {
+  border-color: var(--accent);
+  background: var(--bg-secondary);
+}
+
+.theme-option.active {
+  border-color: var(--accent);
+  background: rgba(59, 130, 246, 0.1);
+}
+
+.theme-icon {
+  background: var(--bg-secondary);
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-primary);
+  flex-shrink: 0;
+}
+
+.theme-option.active .theme-icon {
+  background: var(--accent);
+  color: white;
+}
+
+.theme-info {
+  flex: 1;
+}
+
+.theme-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 2px;
+}
+
+.theme-description {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.theme-check {
+  color: var(--accent);
+  font-weight: bold;
+  font-size: 16px;
+}
+
+.theme-preview-dots {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+
+.preview-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+/* Theme-specific preview colors */
+.bg-light { background: #ffffff; border-color: #e2e8f0; }
+.accent-light { background: #3b82f6; }
+
+.bg-dark { background: #0f172a; border-color: #334155; }
+.accent-dark { background: #60a5fa; }
+
+.bg-minimal { background: #ffffff; border-color: #e6e6e6; }
+.accent-minimal { background: #2d2d2d; }
+
+.bg-ocean { background: #f0f9ff; border-color: #7dd3fc; }
+.accent-ocean { background: #0ea5e9; }
+
+.theme-preview {
+  border-top: 1px solid var(--border);
+  padding-top: 16px;
+}
+
+.preview-label {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+  text-align: center;
+  font-weight: 500;
+}
+
+.preview-colors {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.color-sample {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.color-sample:hover {
+  transform: scale(1.2);
+}
+
+.color-sample.primary {
+  background: var(--bg-primary);
+}
+
+.color-sample.secondary {
+  background: var(--bg-secondary);
+}
+
+.color-sample.accent {
+  background: var(--accent);
+}
+
+.color-sample.text {
+  background: var(--text-primary);
+}
+
+.theme-features {
+  text-align: center;
+  font-size: 11px;
+  color: var(--text-secondary);
+  font-style: italic;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .theme-selector {
+    bottom: 20px;
+    right: 20px;
+  }
+
+  .theme-toggle {
+    width: 48px;
+    height: 48px;
+  }
+
+  .theme-menu {
+    bottom: 60px;
+    min-width: 260px;
+    padding: 16px;
+  }
+
+  .theme-option {
+    padding: 10px 12px;
+  }
+
+  .theme-icon {
+    width: 32px;
+    height: 32px;
+  }
+}
+
+@media (max-width: 480px) {
+  .theme-selector {
+    bottom: 16px;
+    right: 16px;
+  }
+
+  .theme-menu {
+    right: -60px;
+    min-width: 240px;
+  }
+}
