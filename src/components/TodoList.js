@@ -10,6 +10,7 @@ const TodoList = ({
   onToggleComplete,
   onEditTodo,
   onDeleteTodo,
+  onDuplicateTodo,
   view
 }) => {
   const containerVariants = {
@@ -62,6 +63,7 @@ const TodoList = ({
               onToggleComplete={() => onToggleComplete(todo.id)}
               onEdit={() => onEditTodo(todo)}
               onDelete={() => onDeleteTodo(todo.id)}
+              onDuplicate={() => onDuplicateTodo(todo.id)}
               view={view}
             />
           </motion.div>

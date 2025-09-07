@@ -10,7 +10,8 @@ import {
   Tag as TagIcon,
   Clock,
   ChevronDown,
-  ChevronRight
+  ChevronRight,
+  Copy
 } from 'lucide-react';
 import { format, isToday, isTomorrow, isPast } from 'date-fns';
 import './TodoItem.css';
@@ -22,6 +23,7 @@ const TodoItem = ({
   onToggleComplete,
   onEdit,
   onDelete,
+  onDuplicate,
   view
 }) => {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -176,6 +178,16 @@ const TodoItem = ({
             title="Edit todo"
           >
             <Edit size={14} />
+          </button>
+          <button
+            className="action-button duplicate"
+            onClick={(e) => {
+              e.stopPropagation();
+              onDuplicate();
+            }}
+            title="Duplicate todo"
+          >
+            <Copy size={14} />
           </button>
           <button
             className="action-button delete"

@@ -32,7 +32,8 @@ const Header = ({
   selectedCount,
   totalCount,
   onSelectAll,
-  onBulkAction
+  onBulkAction,
+  searchInputRef
 }) => {
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [showSortMenu, setShowSortMenu] = useState(false);
@@ -77,6 +78,7 @@ const Header = ({
             value={filters.search}
             onChange={handleSearchChange}
             className="search-input"
+            ref={searchInputRef}
           />
         </div>
       </div>

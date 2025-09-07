@@ -225,6 +225,11 @@
   color: var(--text-primary);
 }
 
+.action-button.duplicate:hover {
+  background: rgba(59, 130, 246, 0.1);
+  color: var(--primary-color);
+}
+
 .action-button.delete:hover {
   background: rgba(239, 68, 68, 0.1);
   color: var(--error);

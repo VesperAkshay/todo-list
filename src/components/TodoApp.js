@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Header from './Header';
 import TodoForm from './TodoForm';
@@ -6,6 +6,9 @@ import TodoList from './TodoList';
 import Sidebar from './Sidebar';
 import StatsPanel from './StatsPanel';
 import ProfileSection from './ProfileSection';
+import ConfirmDialog from './ConfirmDialog';
+import KeyboardShortcuts from './KeyboardShortcuts';
+import useKeyboardShortcuts from '../hooks/useKeyboardShortcuts';
 import { todoService } from '../services/todoService';
 import './TodoApp.css';
 
@@ -27,6 +30,9 @@ const TodoApp = ({ user, onLogout, onUserUpdate, theme, onThemeChange }) => {
   const [sortOrder, setSortOrder] = useState('desc');
   const [view, setView] = useState('grid'); // grid or list
   const [stats, setStats] = useState({});
+  const [confirmDialog, setConfirmDialog] = useState(null);
+  const [showKeyboardShortcuts, setShowKeyboardShortcuts] = useState(false);
+  const searchInputRef = useRef(null);
 
   useEffect(() => {
     loadTodos();
@@ -36,6 +42,50 @@ const TodoApp = ({ user, onLogout, onUserUpdate, theme, onThemeChange }) => {
   useEffect(() => {
     applyFiltersAndSort();
   }, [todos, filters, sortBy, sortOrder]);
+
+  // Keyboard shortcuts
+  useKeyboardShortcuts({
+    onCreateTodo: () => setIsFormOpen(true),
+    onOpenProfile: () => setIsProfileOpen(true),
+    onToggleMenu: () => setSidebarOpen(prev => !prev),
+    onSearch: () => {
+      if (searchInputRef.current) {
+        searchInputRef.current.focus();
+      }
+    },
+    onSelectAll: () => {
+      if (selectedTodos.length === filteredTodos.length) {
+        setSelectedTodos([]);
+      } else {
+        setSelectedTodos(filteredTodos.map(todo => todo.id));
+      }
+    },
+    onEscape: () => {
+      setIsFormOpen(false);
+      setEditingTodo(null);
+      setIsProfileOpen(false);
+      setShowKeyboardShortcuts(false);
+      if (confirmDialog) {
+        setConfirmDialog(null);
+      }
+    }
+  });
+
+  // Handle ? key for keyboard shortcuts help
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === '?' && !e.ctrlKey && !e.metaKey) {
+        // Don't trigger when typing in input fields
+        if (e.target.tagName !== 'INPUT' && e.target.tagName !== 'TEXTAREA') {
+          e.preventDefault();
+          setShowKeyboardShortcuts(prev => !prev);
+        }
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, []);
 
   const loadTodos = () => {
     const userTodos = todoService.getUserTodos(user.id);
@@ -98,14 +148,78 @@ const TodoApp = ({ user, onLogout, onUserUpdate, theme, onThemeChange }) => {
   };
 
   const handleDeleteTodo = (todoId) => {
+    const todo = todos.find(t => t.id === todoId);
+    if (!todo) return;
+
+    setConfirmDialog({
+      title: "Delete Todo",
+      message: `Are you sure you want to delete "${todo.title}"? This action cannot be undone.`,
+      confirmText: "Delete",
+      cancelText: "Cancel",
+      type: "danger",
+      onConfirm: () => {
+        try {
+          todoService.deleteTodo(todoId);
+          setTodos(prev => prev.filter(todo => todo.id !== todoId));
+          setSelectedTodos(prev => prev.filter(id => id !== todoId));
+          loadStats();
+          setConfirmDialog(null);
+        } catch (error) {
+          console.error('Error deleting todo:', error);
+          setConfirmDialog(null);
+        }
+      },
+      onCancel: () => setConfirmDialog(null)
+    });
+  };
+
+  const handleDuplicateTodo = (todoId) => {
     try {
-      todoService.deleteTodo(todoId);
-      setTodos(prev => prev.filter(todo => todo.id !== todoId));
-      setSelectedTodos(prev => prev.filter(id => id !== todoId));
+      const originalTodo = todos.find(t => t.id === todoId);
+      if (!originalTodo) return;
+
+      const duplicatedTodo = {
+        ...originalTodo,
+        id: undefined, // Let the service generate a new ID
+        title: `${originalTodo.title} (Copy)`,
+        completed: false,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      };
+
+      const newTodo = todoService.createTodo(duplicatedTodo, user.id);
+      setTodos(prev => [newTodo, ...prev]);
       loadStats();
     } catch (error) {
-      console.error('Error deleting todo:', error);
+      console.error('Error duplicating todo:', error);
     }
+  };
+
+  const handleBulkDelete = () => {
+    if (selectedTodos.length === 0) return;
+
+    setConfirmDialog({
+      title: "Delete Selected Todos",
+      message: `Are you sure you want to delete ${selectedTodos.length} selected todo(s)? This action cannot be undone.`,
+      confirmText: "Delete All",
+      cancelText: "Cancel",
+      type: "danger",
+      onConfirm: () => {
+        try {
+          selectedTodos.forEach(todoId => {
+            todoService.deleteTodo(todoId);
+          });
+          setTodos(prev => prev.filter(todo => !selectedTodos.includes(todo.id)));
+          setSelectedTodos([]);
+          loadStats();
+          setConfirmDialog(null);
+        } catch (error) {
+          console.error('Error deleting todos:', error);
+          setConfirmDialog(null);
+        }
+      },
+      onCancel: () => setConfirmDialog(null)
+    });
   };
 
   const handleToggleComplete = (todoId) => {
@@ -190,6 +304,7 @@ const TodoApp = ({ user, onLogout, onUserUpdate, theme, onThemeChange }) => {
         totalCount={filteredTodos.length}
         onSelectAll={handleSelectAll}
         onBulkAction={handleBulkAction}
+        searchInputRef={searchInputRef}
       />
 
       <div className="todo-app-content">
@@ -217,6 +332,7 @@ const TodoApp = ({ user, onLogout, onUserUpdate, theme, onThemeChange }) => {
             onToggleComplete={handleToggleComplete}
             onEditTodo={setEditingTodo}
             onDeleteTodo={handleDeleteTodo}
+            onDuplicateTodo={handleDuplicateTodo}
             view={view}
           />
 
@@ -275,6 +391,26 @@ const TodoApp = ({ user, onLogout, onUserUpdate, theme, onThemeChange }) => {
           />
         )}
       </AnimatePresence>
+
+      {/* Confirmation Dialog */}
+      {confirmDialog && (
+        <ConfirmDialog
+          isOpen={true}
+          title={confirmDialog.title}
+          message={confirmDialog.message}
+          confirmText={confirmDialog.confirmText}
+          cancelText={confirmDialog.cancelText}
+          type={confirmDialog.type}
+          onConfirm={confirmDialog.onConfirm}
+          onClose={confirmDialog.onCancel}
+        />
+      )}
+
+      {/* Keyboard Shortcuts Help */}
+      <KeyboardShortcuts
+        isOpen={showKeyboardShortcuts}
+        onClose={() => setShowKeyboardShortcuts(false)}
+      />
     </div>
   );
 };
