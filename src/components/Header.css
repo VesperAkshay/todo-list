@@ -240,7 +240,16 @@
   transition: all 0.2s ease;
 }
 
-.user-button:hover .user-avatar {
+.user-avatar-image {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--accent);
+}
+
+.user-button:hover .user-avatar,
+.user-button:hover .user-avatar-image {
   transform: scale(1.1);
 }
 

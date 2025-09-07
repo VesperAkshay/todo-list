@@ -254,6 +254,14 @@
   flex-shrink: 0;
 }
 
+.user-avatar-image {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--accent);
+}
+
 .user-details {
   flex: 1;
   min-width: 0;

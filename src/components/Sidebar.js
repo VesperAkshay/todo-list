@@ -276,12 +276,20 @@ const Sidebar = ({
           {/* User Info */}
           <section className="user-section">
             <div className="user-info">
-              <div 
-                className="user-avatar"
-                style={{ backgroundColor: user.avatar?.color || '#3b82f6' }}
-              >
-                {user.avatar?.initials || user.username.slice(0, 2).toUpperCase()}
-              </div>
+              {user.profilePicture ? (
+                <img
+                  src={user.profilePicture}
+                  alt="Profile"
+                  className="user-avatar user-avatar-image"
+                />
+              ) : (
+                <div 
+                  className="user-avatar"
+                  style={{ backgroundColor: user.avatar?.color || '#3b82f6' }}
+                >
+                  {user.avatar?.initials || user.username.slice(0, 2).toUpperCase()}
+                </div>
+              )}
               <div className="user-details">
                 <div className="username">{user.username}</div>
                 <div className="user-email">{user.email}</div>

@@ -180,12 +180,20 @@ const Header = ({
             className="user-button"
             onClick={() => setShowUserMenu(!showUserMenu)}
           >
-            <div
-              className="user-avatar"
-              style={{ backgroundColor: user.avatar?.color || '#3b82f6' }}
-            >
-              {user.avatar?.initials || user.username.slice(0, 2).toUpperCase()}
-            </div>
+            {user.profilePicture ? (
+              <img
+                src={user.profilePicture}
+                alt="Profile"
+                className="user-avatar user-avatar-image"
+              />
+            ) : (
+              <div
+                className="user-avatar"
+                style={{ backgroundColor: user.avatar?.color || '#3b82f6' }}
+              >
+                {user.avatar?.initials || user.username.slice(0, 2).toUpperCase()}
+              </div>
+            )}
           </button>
           
           {showUserMenu && (
