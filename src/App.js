@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import HomePage from './components/HomePage';
 import AuthForm from './components/AuthForm';
 import TodoApp from './components/TodoApp';
 import ThemeSelector from './components/ThemeSelector';
@@ -10,12 +11,14 @@ function App() {
   const [user, setUser] = useState(null);
   const [theme, setTheme] = useState('light');
   const [isLoading, setIsLoading] = useState(true);
+  const [currentView, setCurrentView] = useState('home'); // 'home', 'auth', 'app'
 
   useEffect(() => {
     // Check if user is logged in
     const currentUser = authService.getCurrentUser();
     if (currentUser) {
       setUser(currentUser);
+      setCurrentView('app');
     }
 
     // Load theme preference
@@ -28,6 +31,7 @@ function App() {
 
   const handleLogin = (userData) => {
     setUser(userData);
+    setCurrentView('app');
   };
 
   const handleUserUpdate = (updatedUser) => {
@@ -37,6 +41,15 @@ function App() {
   const handleLogout = () => {
     authService.logout();
     setUser(null);
+    setCurrentView('home');
+  };
+
+  const handleGetStarted = () => {
+    setCurrentView('auth');
+  };
+
+  const handleSignIn = () => {
+    setCurrentView('auth');
   };
 
   const handleThemeChange = (newTheme) => {
@@ -63,7 +76,22 @@ function App() {
   return (
     <div className="app">
       <AnimatePresence mode="wait">
-        {!user ? (
+        {currentView === 'home' && (
+          <motion.div
+            key="home"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.3 }}
+          >
+            <HomePage 
+              onGetStarted={handleGetStarted}
+              onSignIn={handleSignIn}
+            />
+          </motion.div>
+        )}
+        
+        {currentView === 'auth' && (
           <motion.div
             key="auth"
             initial={{ opacity: 0, y: 20 }}
@@ -71,9 +99,14 @@ function App() {
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.3 }}
           >
-            <AuthForm onLogin={handleLogin} />
+            <AuthForm 
+              onLogin={handleLogin}
+              onBackToHome={() => setCurrentView('home')}
+            />
           </motion.div>
-        ) : (
+        )}
+        
+        {currentView === 'app' && user && (
           <motion.div
             key="app"
             initial={{ opacity: 0, y: 20 }}
@@ -92,6 +125,7 @@ function App() {
         )}
       </AnimatePresence>
       
+      {/* Show theme selector on all views */}
       <ThemeSelector 
         currentTheme={theme}
         onThemeChange={handleThemeChange}

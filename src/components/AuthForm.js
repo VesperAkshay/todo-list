@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { User, Mail, Lock, Eye, EyeOff } from 'lucide-react';
+import { User, Mail, Lock, Eye, EyeOff, ArrowLeft } from 'lucide-react';
 import { authService } from '../services/authService';
 import './AuthForm.css';
 
-const AuthForm = ({ onLogin }) => {
+const AuthForm = ({ onLogin, onBackToHome }) => {
   const [isLoginMode, setIsLoginMode] = useState(true);
   const [formData, setFormData] = useState({
     username: '',
@@ -111,6 +111,17 @@ const AuthForm = ({ onLogin }) => {
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.1 }}
         >
+          {onBackToHome && (
+            <button
+              type="button"
+              className="back-button"
+              onClick={onBackToHome}
+              aria-label="Back to home"
+            >
+              <ArrowLeft size={20} />
+              Back
+            </button>
+          )}
           <h1>{isLoginMode ? 'Welcome Back' : 'Create Account'}</h1>
           <p>{isLoginMode ? 'Sign in to your account' : 'Start organizing your tasks'}</p>
         </motion.div>
